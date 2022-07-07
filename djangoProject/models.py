@@ -13,11 +13,10 @@ class asdf(models.Model):
         return self.username
 
 
-
 # 系统管理员信息表
 class AdminInfo(models.Model):
     id = models.BigAutoField(primary_key=True)
-    email = models.EmailField(verbose_name='email', max_length=20, unique=True)  # 邮箱作为登录账号
+    email = models.EmailField(verbose_name='email', max_length=30, unique=True)  # 邮箱作为登录账号
     password = models.TextField()  # 在视图里加密
     name = models.CharField(verbose_name='name', max_length=40)  # 真实姓名
     gender = models.CharField(verbose_name='gender', max_length=2)  # f为女，m为男
