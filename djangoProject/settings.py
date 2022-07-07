@@ -153,3 +153,14 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'x-requested-with',
 )
+
+
+# 发邮件相关配置
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_USE_SSL = True
+EMAIL_HOST = 'smtp.qq.com'  # 如果是 163 改成 smtp.163.com
+EMAIL_PORT = 465
+EMAIL_HOST_USER = '2539496792@qq.com'  # 帐号
+EMAIL_HOST_PASSWORD = 'pnmndovnaeaxeabc'  # 密码
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

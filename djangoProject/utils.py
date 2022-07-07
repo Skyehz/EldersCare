@@ -1,4 +1,4 @@
-from random import random
+import random
 
 from django.core.mail import send_mail
 
@@ -19,6 +19,11 @@ def generate_code():
 
 
 # 发送邮件
-def send_email(email):
-    send_mail('SmartPension注册验证', '亲爱的的用户' + email + ',您有一条合同需要审批！', '2539496792@qq.com',
+def send_email1(email):
+    ecode = generate_code()
+    send_mail('SmartPension注册验证', '亲爱的的用户' + email + ',您的验证码是'+ecode, '2539496792@qq.com',
               [email], fail_silently=False)
+
+
+
+send_email1('czh15296700133@163.com')
