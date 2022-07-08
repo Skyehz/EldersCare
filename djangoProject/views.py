@@ -92,7 +92,7 @@ def login(request):
         return HttpResponse(json.dumps(dic))
     if check_password(password, admin.password):
         dic['status'] = "Success"
-        dic['admin_id'] = admin.id
+        dic['id'] = admin.id
         print(dic)
         return HttpResponse(json.dumps(dic))
     else:
@@ -122,8 +122,7 @@ def edit_admin_info(request):
             dic['status'] = "Failed"
             dic['message'] = "No Input"
             return HttpResponse(json.dumps(dic))
-        # dic['status'] = "Failed"
-        # dic['message'] = "Wrong Method"
+        dic['status'] = "Success"
         return HttpResponse(json.dumps(dic))
     # 解析前端的json数据建数据库记录
     try:
