@@ -146,3 +146,4 @@ def edit_admin_info(request):
     dic['status'] = "Success"
     return HttpResponse(json.dumps(dic))
 
+
