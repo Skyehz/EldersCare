@@ -25,3 +25,4 @@ urlpatterns = [
     path('login', views.login),
     path('edit', views.edit_admin_info),
 ]
+

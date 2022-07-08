@@ -24,7 +24,6 @@ def register(request):
         admin = AdminInfo.objects.get(email=email)
     except AdminInfo.DoesNotExist:
         if code == ecode:
-
             dic['status'] = "Success"
             encry_password = make_password(password)
             newAdmin = AdminInfo(email=email, password=encry_password,
