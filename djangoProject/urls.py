@@ -15,8 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from djangoProject import views, video
+from djangoProject import views, video, elderly_info
 from djangoProject.views import send_code
+from .elderly_info import create_elderly_record
 
 urlpatterns = [
     path('register', views.register),
@@ -24,5 +25,7 @@ urlpatterns = [
     path('send_code', send_code),
     path('login', views.login),
     path('edit', views.edit_admin_info),
+    path('elderly/profile', elderly_info.create_elderly_record),
+    path('display', video.video),
 ]
 

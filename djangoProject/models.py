@@ -34,7 +34,7 @@ class ElderlyInfo(models.Model):
     name = models.CharField(verbose_name='name', max_length=40)
     gender = models.CharField(verbose_name='gender', max_length=2)  # f为女，m为男
     phone = models.CharField(verbose_name='phone', max_length=20)
-    idCardNum = models.CharField(verbose_name='idCardNum', max_length=18)
+    idCardNum = models.CharField(verbose_name='idCardNum', max_length=18, unique=True)
     birthday = models.CharField(verbose_name='birthday', max_length=25)
     checkinDate = models.CharField(verbose_name='checkinDate', max_length=25)  # 登记入住时间
     checkoutDate = models.CharField(verbose_name='checkoutDate', max_length=25)
@@ -66,7 +66,7 @@ class EmployeeInfo(models.Model):
     name = models.CharField(verbose_name='name', max_length=40)
     gender = models.CharField(verbose_name='gender', max_length=2)  # f为女，m为男
     phone = models.CharField(verbose_name='phone', max_length=20)
-    idCardNum = models.CharField(verbose_name='idCardNum', max_length=18)
+    idCardNum = models.CharField(verbose_name='idCardNum', max_length=18, unique=True)
     birthday = models.CharField(verbose_name='birthday', max_length=25)
     hireDate = models.CharField(verbose_name='checkinDate', max_length=25)  # 登记入住时间
     dismissDate = models.CharField(verbose_name='checkoutDate', max_length=25, blank=True)
@@ -160,7 +160,7 @@ class VolunteerInfo(models.Model):
     name = models.CharField(verbose_name='name', max_length=40)
     gender = models.CharField(verbose_name='gender', max_length=2)  # f为女，m为男
     phone = models.CharField(verbose_name='phone', max_length=20)
-    idCardNum = models.CharField(verbose_name='idCardNum', max_length=18)
+    idCardNum = models.CharField(verbose_name='idCardNum', max_length=18, unique=True)
     birthday = models.CharField(verbose_name='birthday', max_length=25)
     hireDate = models.CharField(verbose_name='checkinDate', max_length=25)  # 登记入住时间
     dismissDate = models.CharField(verbose_name='checkoutDate', max_length=25, blank=True)

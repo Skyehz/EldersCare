@@ -1,11 +1,14 @@
 import django
 import os
 import random
+import cv2
 
 from django.core.mail import send_mail
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "djangoProject.settings")
 django.setup()
+
+X = 1
 
 
 # 生成随机数
@@ -29,4 +32,33 @@ def send_email(email):
     send_mail('SmartPension注册验证', '亲爱的的用户' + email + ',您的验证码是' + ecode, '2539496792@qq.com',
               [email], fail_silently=False)
     return ecode
+
+
+# 拍摄头像
+def test():
+    print("in test")
+    cam = cv2.VideoCapture(0)  # 调用默认摄像头
+    while True:
+        ret, frame = cam.read()
+        cv2.imshow("test", frame)
+        # waitKey(1)持续等待
+        cv2.waitKey(1)
+        # 加一个鼠标点击事件，frame传给了OnMouseAction的param
+        cv2.setMouseCallback("test", OnMouseAction, frame)
+        global X
+        if X == 2:
+            X = 1
+            break
+
+    cam.release()
+    cv2.destroyAllWindows()
+
+
+def OnMouseAction(event, x, y, flags, param):
+    if event == cv2.EVENT_LBUTTONDOWN:  # cv2.EVENT_LBUTTONDOWN 左键点击
+        cv2.imwrite("C:/Users/user/PycharmProjects/EldersCare/profiles/youtemp.png", param)
+        # 写进该目录，后面必须加上文件名（png,jpg格式），不需要提前创建空文件
+        global X
+        X = 2
+
 
