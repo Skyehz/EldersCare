@@ -21,5 +21,7 @@ from djangoProject.views import send_code
 urlpatterns = [
     path('register', views.register),
     path('display', video.video),
-    path('send_code', send_code)
+    path('send_code', send_code),
+    path('login', views.login),
+    path('edit', views.edit_admin_info),
 ]
