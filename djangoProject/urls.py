@@ -16,10 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from djangoProject import views, video
-from djangoProject.views import send_code
+
 
 urlpatterns = [
     path('register', views.register),
     path('display', video.video),
-    path('send_code', send_code)
+    path('send_code', views.send_code)
 ]

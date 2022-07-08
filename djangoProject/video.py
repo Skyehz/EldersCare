@@ -31,7 +31,7 @@ def video(request):
     # 使用流传输传输视频流
     return StreamingHttpResponse(gen_display(camera), content_type='multipart/x-mixed-replace; boundary=frame')
 
-#
+
 # def gen_display(camera):
 #     """
 #     视频流生成器功能。
