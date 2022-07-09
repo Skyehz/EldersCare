@@ -20,9 +20,10 @@ from djangoProject.views import send_code
 
 urlpatterns = [
     path('register', views.register),
-    path('display', video.video),
+    path('video_feed', video.video),
     path('login', views.login),
     path('edit', views.edit_admin_info),
-    path('send_code', views.send_code)
+    path('send_code', views.send_code),
+    path('changePwd', views.change_pwd)
 ]
 

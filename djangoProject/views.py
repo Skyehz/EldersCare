@@ -46,6 +46,7 @@ def register(request):
         return HttpResponse(json.dumps(dic))
 
 
+# 发送验证码
 @csrf_exempt
 def send_code(request):
     dic = {}
@@ -63,6 +64,31 @@ def send_code(request):
 
         dic['status'] = "Success"
 
+        return HttpResponse(json.dumps(dic))
+    except (KeyError, json.decoder.JSONDecodeError):
+        dic['status'] = "Failed"
+        dic['message'] = "No Input"
+        return HttpResponse(json.dumps(dic))
+
+
+# 修改密码
+@csrf_exempt
+def change_pwd(request):
+    dic = {}
+    if request.method == 'GET':
+        dic['status'] = "Failed"
+        dic['message'] = "Wrong Method"
+        return HttpResponse(json.dumps(dic))
+    try:
+        post_content = json.loads(request.body)
+        admin_id = post_content['admin_id']
+        new_pwd = post_content['password']
+        admin = AdminInfo.objects.get(id=admin_id)
+        admin.password = new_pwd
+        admin.save()
+        dic['status'] = "Success"
+        dic['admin_id'] = admin.id
+        print(dic)
         return HttpResponse(json.dumps(dic))
     except (KeyError, json.decoder.JSONDecodeError):
         dic['status'] = "Failed"
