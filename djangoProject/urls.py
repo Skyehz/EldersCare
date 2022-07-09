@@ -15,15 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from djangoProject import views, video
+from djangoProject import views, video, elderly_info
 from djangoProject.views import send_code
+from .elderly_info import create_elderly_record
 
-urlpatterns = [
+urlpatterns = [  # urls
     path('register', views.register),
-    path('video_feed', video.video),
+    path('display', video.video),
+    path('send_code', send_code),
     path('login', views.login),
     path('edit', views.edit_admin_info),
-    path('send_code', views.send_code),
+    path('elderly/create', elderly_info.create_elderly_record),
     path('changePwd', views.change_pwd)
 ]
 
