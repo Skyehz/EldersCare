@@ -19,7 +19,7 @@ from djangoProject import views, video, elderly_info
 from djangoProject.views import send_code
 from .elderly_info import create_elderly_record
 
-urlpatterns = [
+urlpatterns = [  # urls
     path('register', views.register),
     path('display', video.video),
     path('send_code', send_code),
@@ -28,4 +28,5 @@ urlpatterns = [
     path('elderly/create', elderly_info.create_elderly_record),
     path('display', video.video),
 ]
+
 
