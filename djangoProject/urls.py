@@ -26,6 +26,7 @@ urlpatterns = [  # urls
     path('login', views.login),
     path('edit', views.edit_admin_info),
     path('elderly/create', elderly_info.create_elderly_record),
-    path('changePwd', views.change_pwd)
+    path('changePwd', views.change_pwd),
+    path('changePwd_send_code', views.send_code_changepw)
 ]
 

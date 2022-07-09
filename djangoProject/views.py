@@ -71,6 +71,33 @@ def send_code(request):
         return HttpResponse(json.dumps(dic))
 
 
+# 发送验证码(修改密码)
+@csrf_exempt
+def send_code_changepw(request):
+    dic = {}
+    if request.method == 'GET':
+        dic['status'] = "Failed"
+        dic['message'] = "Wrong Method"
+        return HttpResponse(json.dumps(dic))
+    try:
+        post_content = json.loads(request.body)
+        admin_id = post_content['id']
+        admin = AdminInfo.objects.get(id=admin_id)
+        email = admin.email
+        # 发送给邮箱的验证码
+        global pcode
+        pcode = ''
+        pcode = send_email(email)
+
+        dic['status'] = "Success"
+
+        return HttpResponse(json.dumps(dic))
+    except (KeyError, json.decoder.JSONDecodeError):
+        dic['status'] = "Failed"
+        dic['message'] = "No Input"
+        return HttpResponse(json.dumps(dic))
+
+
 # 修改密码
 @csrf_exempt
 def change_pwd(request):
@@ -81,13 +108,18 @@ def change_pwd(request):
         return HttpResponse(json.dumps(dic))
     try:
         post_content = json.loads(request.body)
-        admin_id = post_content['admin_id']
-        new_pwd = post_content['password']
-        admin = AdminInfo.objects.get(id=admin_id)
-        admin.password = new_pwd
-        admin.save()
-        dic['status'] = "Success"
-        dic['admin_id'] = admin.id
+        admin_id = post_content['id']
+        new_pwd = post_content['newPwd']
+        code = post_content['code']
+        if code == pcode:
+            admin = AdminInfo.objects.get(id=admin_id)
+            admin.password = make_password(new_pwd)
+            print(admin.password)
+            admin.save()
+            dic['status'] = "Success"
+        else:
+            dic['status'] = "Failed"
+            dic['message'] = "Wrong code"
         print(dic)
         return HttpResponse(json.dumps(dic))
     except (KeyError, json.decoder.JSONDecodeError):
