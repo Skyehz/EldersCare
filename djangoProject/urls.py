@@ -25,7 +25,7 @@ urlpatterns = [
     path('send_code', send_code),
     path('login', views.login),
     path('edit', views.edit_admin_info),
-    path('elderly/profile', elderly_info.create_elderly_record),
+    path('elderly/create', elderly_info.create_elderly_record),
     path('display', video.video),
 ]
 

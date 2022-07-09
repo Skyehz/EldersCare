@@ -45,7 +45,7 @@ class ElderlyInfo(models.Model):
     description = models.CharField(verbose_name='description', max_length=255)
     createTime = models.DateTimeField(default=timezone.now())  # 记录创建时间
     createBy = models.ForeignKey(AdminInfo, on_delete=models.SET_NULL, null=True, related_name='createBy')  # 创建该记录的管理员
-    updateTime = models.DateTimeField()  # 最近更新时间
+    updateTime = models.DateTimeField(null=True)  # 最近更新时间
     updateBy = models.ForeignKey(AdminInfo, on_delete=models.SET_NULL, null=True, related_name='updateBy')  # 最近更新的管理员
     status = models.IntegerField()  # 数据是否有效，0无效1有效
 
@@ -75,7 +75,7 @@ class EmployeeInfo(models.Model):
     description = models.CharField(verbose_name='description', max_length=255)
     createTime = models.DateTimeField(default=timezone.now())  # 记录创建时间
     createBy = models.ForeignKey(AdminInfo, on_delete=models.SET_NULL, null=True, related_name='creator')  # 创建该记录的管理员
-    updateTime = models.DateTimeField()  # 最近更新时间
+    updateTime = models.DateTimeField(null=True)  # 最近更新时间
     updateBy = models.ForeignKey(AdminInfo, on_delete=models.SET_NULL, null=True, related_name='updater')  # 最近更新的管理员
     status = models.IntegerField()  # 数据是否有效，0无效1有效
 
@@ -121,7 +121,7 @@ class FamilyInfo(models.Model):
     phone = models.CharField(verbose_name='phone', max_length=20)
     email = models.EmailField(verbose_name='email', max_length=20, unique=True)
     createTime = models.DateTimeField(default=timezone.now())  # 记录创建时间
-    updateTime = models.DateTimeField()  # 最近更新时间
+    updateTime = models.DateTimeField(null=True)  # 最近更新时间
     status = models.IntegerField()  # 数据是否有效，0无效1有效
 
 
@@ -138,7 +138,7 @@ class FamilyElderlyRelationship(models.Model):
 class Monitor(models.Model):
     id = models.BigAutoField(primary_key=True)
     createTime = models.DateTimeField(default=timezone.now())  # 记录创建时间
-    updateTime = models.DateTimeField()  # 最近更新时间
+    updateTime = models.DateTimeField(null=True)  # 最近更新时间
     status = models.IntegerField()  # 数据是否有效，0无效1有效
     description = models.CharField(verbose_name='description', max_length=255)
     ip = models.CharField(max_length=255)
@@ -168,7 +168,7 @@ class VolunteerInfo(models.Model):
     profilePath = models.CharField(verbose_name='profilePath', max_length=255)
     description = models.CharField(verbose_name='description', max_length=255)
     createTime = models.DateTimeField(default=timezone.now())  # 记录创建时间
-    updateTime = models.DateTimeField()  # 最近更新时间
+    updateTime = models.DateTimeField(null=True)  # 最近更新时间
     status = models.IntegerField()  # 数据是否有效，0无效1有效
 
 
