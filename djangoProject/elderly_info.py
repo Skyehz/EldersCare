@@ -1,6 +1,8 @@
 from .utils import test
 from .models import ElderlyInfo
 from .models import AdminInfo
+from .models import FamilyInfo
+from .models import FamilyElderlyRelationship
 
 import json
 import datetime
@@ -33,18 +35,37 @@ def create_elderly_record(request):
         createTime = datetime.datetime.now().strftime("%Y-%m-%d")
         print(createTime)
         createBy = AdminInfo.objects.get(id=post_content['id'])
+        families = post_content['families']
     except (KeyError, json.decoder.JSONDecodeError):
         dic['status'] = "Failed"
         dic['message'] = "No Input"
         return HttpResponse(json.dumps(dic))
-        # 存储数据表记录
+    # 存储数据表记录
     newElderly = ElderlyInfo(name=name, gender=gender, phone=phone,
                              idCardNum=idCardNum, birthday=birthday,
                              checkinDate=checkinDate, checkoutDate=checkoutDate,
                              roomNum=roomNum, health=health,
                              description=description, createTime=createTime,
                              createBy=createBy, status=1)
+    print(newElderly.createTime)
     newElderly.save()
+    for family in families:
+        print(family)
+        # 家属相关信息
+        wechatId = family['wechatId']
+        family_name = family['name']
+        family_gender = family['gender']
+        family_phone = family['phone']
+        email = family['email']
+        newFamily = FamilyInfo(wechatId=wechatId, name=family_name,
+                               phone=family_phone, gender=family_gender,
+                               email=email, createTime=createTime, status=1)
+        newFamily.save()
+        # relatedE = ElderlyInfo.objects.get(id=newElderly.id)
+        # relatedF = FamilyInfo.objects.get(id=newFamily.id)
+        newRelation = FamilyElderlyRelationship(elderlyId=newElderly, familyId=newFamily,
+                                                createTime=createTime, status=1)
+        newRelation.save()
     imageSetDir = "C:/Users/user/PycharmProjects/EldersCare/imageSet/elderly/"+str(newElderly.id)
     profilePath = "C:/Users/user/PycharmProjects/EldersCare/profiles/elderly/"+str(newElderly.id)+".png"
     os.mkdir(imageSetDir)
