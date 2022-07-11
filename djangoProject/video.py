@@ -52,6 +52,7 @@ def capture_image(camera, type, id):
 
 
 def gen_display(camera):
+
     while True:
         frame = camera.get_frame()
         yield (b'--frame\r\n'

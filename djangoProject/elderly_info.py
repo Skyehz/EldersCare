@@ -70,10 +70,10 @@ def create_elderly_record(request):
         newRelation = FamilyElderlyRelationship(elderlyId=newElderly, familyId=newFamily,
                                                 createTime=createTime, status=1)
         newRelation.save()
-    # imageSetDir = "/usr/local/djangoProject/imageSet/elderly/"+str(newElderly.id)
-    # profilePath = "/usr/local/djangoProject/profiles/elderly/"+str(newElderly.id)+".png"
-    imageSetDir = "C:/Users/user/PycharmProjects/EldersCare/imageSet/elderly/"+str(newElderly.id)
-    profilePath = "C:/Users/user/PycharmProjects/EldersCare/profiles/elderly/"+str(newElderly.id)+".png"
+    imageSetDir = "/usr/local/djangoProject/imageSet/elderly/"+str(newElderly.id)
+    profilePath = "/usr/local/djangoProject/profiles/elderly/"+str(newElderly.id)+".png"
+    # imageSetDir = "C:/Users/user/PycharmProjects/EldersCare/imageSet/elderly/"+str(newElderly.id)
+    # profilePath = "C:/Users/user/PycharmProjects/EldersCare/profiles/elderly/"+str(newElderly.id)+".png"
     os.mkdir(imageSetDir)
     ElderlyInfo.objects.filter(id=newElderly.id).update(imageSetDir=imageSetDir,
                                                         profilePath=profilePath)
