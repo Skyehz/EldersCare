@@ -1,14 +1,19 @@
-from .utils import test
+from .utils import encode_base64
 from .models import ElderlyInfo
 from .models import AdminInfo
 from .models import FamilyInfo
 from .models import FamilyElderlyRelationship
+from .video import capture_image
 
 import json
 import datetime
 import os
+import cv2
+from django.http import StreamingHttpResponse
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+
+from datetime import datetime, date
 
 
 @csrf_exempt
@@ -74,5 +79,57 @@ def create_elderly_record(request):
     dic['status'] = "Success"
     dic['elderly_id'] = newElderly.id
     return HttpResponse(json.dumps(dic))
+
+
+# 拍摄老人头像
+@csrf_exempt
+def shot_elderly_profile(request):
+    dic = {}
+    # get请求后端向前端推流
+    if request.method == 'GET':
+        try:
+            content = json.loads(request.body)
+            elderly_id = content['elderly_id']
+        except (KeyError, json.decoder.JSONDecodeError):
+            dic['status'] = "Failed"
+            dic['message'] = "No Input"
+            return HttpResponse(json.dumps(dic))
+        camera = cv2.VideoCapture("rtmp://39.107.230.98:1935/live/home")
+        # 使用流传输传输视频流
+        return StreamingHttpResponse(capture_image(camera, "elderly", elderly_id),
+                                     content_type='multipart/x-mixed-replace; boundary=frame')
+
+
+# 显示全部老人信息
+@csrf_exempt
+def show_all_elderly(request):
+    dic = {}
+    if request.method == 'GET':
+        elderlys = ElderlyInfo.objects.all()
+        # 当没有任何记录
+        if elderlys.count() == 0:
+            dic = {'status': "Failed", 'message': "no elderly"}
+            return HttpResponse(json.dumps(dic))
+
+        array = []
+        orderedE = elderlys.order_by('id')  # 将老人记录按id顺序排序
+        for elderly in orderedE:  # TODO: add photo using base64
+            profile = encode_base64(elderly.profilePath)
+            tmp = {'id': elderly.id, 'name': elderly.name, 'gender': elderly.gender,
+                   'phone': elderly.phone, 'birthday': elderly.birthday,
+                   'description': elderly.description, 'idCardNum': elderly.idCardNum,
+                   'checkinDate': elderly.checkinDate, 'checkoutDate': elderly.checkoutDate,
+                   'roomNum': elderly.roomNum, 'health': elderly.health, 'profile': profile}
+            array.append(tmp)
+        dic = {"status": "success", "elderly_array": array}
+
+        return HttpResponse(json.dumps(dic, ensure_ascii=False))
+
+
+# 修改老人信息
+
+
+
+
 
 
