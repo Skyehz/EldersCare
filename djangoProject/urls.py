@@ -29,6 +29,8 @@ urlpatterns = [  # urls
     path('elderly/create', elderly_info.create_elderly_record),
     path('elderly/profile', elderly_info.shot_elderly_profile),
     path('elderly/total', elderly_info.show_all_elderly),
+    path('elderly/delete', elderly_info.delete_elderly),
+    path('elderly/edit', elderly_info.edit_elderly),
     path('changePwd', views.change_pwd),
     path('changePwd_send_code', views.send_code_changepw)
 ]
