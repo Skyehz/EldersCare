@@ -70,8 +70,10 @@ def create_elderly_record(request):
         newRelation = FamilyElderlyRelationship(elderlyId=newElderly, familyId=newFamily,
                                                 createTime=createTime, status=1)
         newRelation.save()
-    imageSetDir = "/usr/local/djangoProject/imageSet/elderly/"+str(newElderly.id)
-    profilePath = "/usr/local/djangoProject/profiles/elderly/"+str(newElderly.id)+".png"
+    # imageSetDir = "/usr/local/djangoProject/imageSet/elderly/"+str(newElderly.id)
+    # profilePath = "/usr/local/djangoProject/profiles/elderly/"+str(newElderly.id)+".png"
+    imageSetDir = "C:/Users/user/PycharmProjects/EldersCare/imageSet/elderly/"+str(newElderly.id)
+    profilePath = "C:/Users/user/PycharmProjects/EldersCare/profiles/elderly/"+str(newElderly.id)+".png"
     os.mkdir(imageSetDir)
     ElderlyInfo.objects.filter(id=newElderly.id).update(imageSetDir=imageSetDir,
                                                         profilePath=profilePath)
@@ -113,12 +115,25 @@ def show_all_elderly(request):
         array = []
         orderedE = elderlys.order_by('id')  # 将老人记录按id顺序排序
         for elderly in orderedE:
+            print(elderly.profilePath)
             profile = encode_base64(elderly.profilePath)  # 将图片用base64编码
+            # 获取家属
+            relations = FamilyElderlyRelationship.objects.filter(elderlyId=elderly)
+            famArray = []
+            for r in relations:
+                family = r.familyId
+                tt = {'wechatId': family.wechatId, 'name': family.name, 'gender': family.gender,
+                      'phone': family.phone, 'email': family.email}
+                print(tt)
+                famArray.append(tt)
+                print(famArray)
+            print(famArray)
             tmp = {'id': elderly.id, 'name': elderly.name, 'gender': elderly.gender,
                    'phone': elderly.phone, 'birthday': elderly.birthday,
                    'description': elderly.description, 'idCardNum': elderly.idCardNum,
                    'checkinDate': elderly.checkinDate, 'checkoutDate': elderly.checkoutDate,
-                   'roomNum': elderly.roomNum, 'health': elderly.health, 'profile': profile}
+                   'roomNum': elderly.roomNum, 'health': elderly.health,
+                   'families': famArray, 'profile': profile}
             array.append(tmp)
         dic = {"status": "success", "elderly_array": array}
 
@@ -126,6 +141,7 @@ def show_all_elderly(request):
 
 
 # 修改老人信息
+
 
 
 
