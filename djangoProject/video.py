@@ -28,7 +28,7 @@ def capture_image(camera, type, id):
                 yield (b'--frame\r\n'
                        b'Content-Type: image/jpeg\r\n\r\n' + frame.tobytes() + b'\r\n')
             tok = time.time()
-            if tok-tik >= 6:
+            if tok-tik >= 5:
                 cv2.imwrite(path, frame)
                 print("ok")
                 break

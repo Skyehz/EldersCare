@@ -2,6 +2,7 @@ import django
 import os
 import random
 import cv2
+import base64
 
 from django.core.mail import send_mail
 
@@ -32,6 +33,16 @@ def send_email(email):
     send_mail('SmartPension注册验证', '亲爱的的用户' + email + ',您的验证码是' + ecode, '2539496792@qq.com',
               [email], fail_silently=False)
     return ecode
+
+
+# 将头像用base64编码
+def encode_base64(path):
+    # 通过opencv转base64
+    img_im = cv2.imread(path)
+    aa = base64.b64encode(cv2.imencode('.jpg', img_im)[1]).decode()
+    coded = "data:image/jpg;base64,"+aa
+
+    return coded
 
 
 # 拍摄头像
