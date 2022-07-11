@@ -13,7 +13,6 @@ from django.http import StreamingHttpResponse
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from datetime import datetime, date
 
 
 @csrf_exempt
@@ -71,8 +70,8 @@ def create_elderly_record(request):
         newRelation = FamilyElderlyRelationship(elderlyId=newElderly, familyId=newFamily,
                                                 createTime=createTime, status=1)
         newRelation.save()
-    imageSetDir = "C:/Users/user/PycharmProjects/EldersCare/imageSet/elderly/"+str(newElderly.id)
-    profilePath = "C:/Users/user/PycharmProjects/EldersCare/profiles/elderly/"+str(newElderly.id)+".png"
+    imageSetDir = "/usr/local/djangoProject/imageSet/elderly/"+str(newElderly.id)
+    profilePath = "/usr/local/djangoProject/profiles/elderly/"+str(newElderly.id)+".png"
     os.mkdir(imageSetDir)
     ElderlyInfo.objects.filter(id=newElderly.id).update(imageSetDir=imageSetDir,
                                                         profilePath=profilePath)
@@ -113,8 +112,8 @@ def show_all_elderly(request):
 
         array = []
         orderedE = elderlys.order_by('id')  # 将老人记录按id顺序排序
-        for elderly in orderedE:  # TODO: add photo using base64
-            profile = encode_base64(elderly.profilePath)
+        for elderly in orderedE:
+            profile = encode_base64(elderly.profilePath)  # 将图片用base64编码
             tmp = {'id': elderly.id, 'name': elderly.name, 'gender': elderly.gender,
                    'phone': elderly.phone, 'birthday': elderly.birthday,
                    'description': elderly.description, 'idCardNum': elderly.idCardNum,
