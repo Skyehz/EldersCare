@@ -30,6 +30,7 @@ urlpatterns = [  # urls
     path('elderly/profile', elderly_info.shot_elderly_profile),
     path('elderly/total', elderly_info.show_all_elderly),
     path('changePwd', views.change_pwd),
-    path('changePwd_send_code', views.send_code_changepw)
+    path('changePwd_send_code', views.send_code_changePwd),
+    path('changePwd_forget', views.forget_changePwd),
 ]
 
