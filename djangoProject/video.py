@@ -3,7 +3,7 @@ import time
 from django.http import StreamingHttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from djangoProject.cam import VideoCamera
+# from djangoProject.cam import VideoCamera
 
 
 # 拍照
