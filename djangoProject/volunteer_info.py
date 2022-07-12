@@ -49,7 +49,7 @@ def create_volunteer_info(request):
     profilePath = "/usr/local/djangoProject/profiles/volunteer/"+str(new_volunteer.id)+".png"
     imageSetDir2 = "C:/Users/user/PycharmProjects/EldersCare/imageSet/volunteer/"+str(new_volunteer.id)
     # profilePath = "C:/Users/user/PycharmProjects/EldersCare/profiles/volunteer/"+str(new_volunteer.id)+".png"
-    os.mkdir(imageSetDir2)
+    os.mkdir(imageSetDir)
     VolunteerInfo.objects.filter(id=new_volunteer.id).update(imageSetDir=imageSetDir,
                                                              profilePath=profilePath)
     dic['status'] = "Success"

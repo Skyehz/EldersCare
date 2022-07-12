@@ -48,7 +48,7 @@ def create_employee_info(request):
     profilePath = "/usr/local/djangoProject/profiles/employee/"+str(new_employee.id)+".png"
     imageSetDir2 = "C:/Users/user/PycharmProjects/EldersCare/imageSet/employee/"+str(new_employee.id)
     # profilePath = "C:/Users/user/PycharmProjects/EldersCare/profiles/employee/"+str(new_employee.id)+".png"
-    os.mkdir(imageSetDir2)
+    os.mkdir(imageSetDir)
     EmployeeInfo.objects.filter(id=new_employee.id).update(imageSetDir=imageSetDir,
                                                            profilePath=profilePath)
     dic['status'] = "Success"
