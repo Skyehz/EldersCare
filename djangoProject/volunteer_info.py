@@ -49,7 +49,7 @@ def create_volunteer_info(request):
     profilePath = "/usr/local/djangoProject/profiles/volunteer/"+str(new_volunteer.id)+".png"
     imageSetDir2 = "C:/Users/user/PycharmProjects/EldersCare/imageSet/volunteer/"+str(new_volunteer.id)
     # profilePath = "C:/Users/user/PycharmProjects/EldersCare/profiles/volunteer/"+str(new_volunteer.id)+".png"
-    os.mkdir(imageSetDir2)
+    os.mkdir(imageSetDir)
     VolunteerInfo.objects.filter(id=new_volunteer.id).update(imageSetDir=imageSetDir,
                                                              profilePath=profilePath)
     dic['status'] = "Success"
@@ -62,7 +62,7 @@ def create_volunteer_info(request):
 def shot_volunteer_profile(request):
     dic = {}
     # get请求后端向前端推流
-    if request.method == 'GET':
+    if request.method == 'POST':
         try:
             content = json.loads(request.body)
             volunteer_id = content['volunteer_id']
