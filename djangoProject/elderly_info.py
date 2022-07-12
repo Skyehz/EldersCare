@@ -87,7 +87,7 @@ def create_elderly_record(request):
 def shot_elderly_profile(request):
     dic = {}
     # get请求后端向前端推流
-    if request.method == 'GET':
+    if request.method == 'POST':
         try:
             content = json.loads(request.body)
             elderly_id = content['elderly_id']

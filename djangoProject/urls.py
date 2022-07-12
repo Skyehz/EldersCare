@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from djangoProject import views, video, elderly_info, volunteer_info
+from djangoProject import views, video, elderly_info, volunteer_info, employee_info
 from djangoProject.views import send_code
 
 from .elderly_info import create_elderly_record
@@ -37,6 +37,11 @@ urlpatterns = [  # urls
     path('volunteer/total', volunteer_info.show_all_volunteer),
     path('volunteer/edit', volunteer_info.edit_volunteer),
     path('volunteer/delete', volunteer_info.delete_volunteer),
+    path('employee/create', employee_info.create_employee_info),
+    path('employee/profile', employee_info.shot_employee_profile),
+    path('employee/total', employee_info.show_all_employee),
+    path('employee/edit', employee_info.edit_employee),
+    path('employee/delete', employee_info.delete_employee),
     path('changePwd', views.change_pwd),
     path('changePwd_send_code', views.send_code_changePwd),
     path('changePwd_forget', views.forget_changePwd),
