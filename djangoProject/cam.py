@@ -29,18 +29,20 @@ class VideoCamera(object):
     def __init__(self):
         self.cap = cv2.VideoCapture("rtmp://39.107.230.98:1935/live/home")
         # self.cap = cv2.VideoCapture(0)
-        self.count = 1
-        self.timeF = 2
+        # self.count = 1
+        # self.timeF = 60
+
     def __del__(self):
         self.cap.release()
 
     # 处理画面（画警戒区域等等）
     def get_frame(self):
         success, image = self.cap.read()
-        self.count = self.count+1
+        # self.count = self.count+1
         if not success:
             return
         image = cv2.resize(image, (0, 0), fx=0.25, fy=0.25)
+        # 跳帧识别
         # if self.count % self.timeF != 0:
         #     print("Don't classify")
         #     ret, jpeg = cv2.imencode('.jpeg', image)
@@ -49,13 +51,11 @@ class VideoCamera(object):
 
         # 每隔timeF帧进行识别操作
         # image = cv2.resize(image, (0, 0), fx=0.25, fy=0.25)
-        # image = imutils.resize(image, width=600)
 
         # 标注左上角的时间
         datet = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         cv2.putText(image, datet, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                     (255, 255, 255), 2, cv2.LINE_AA)  # cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2, 8
-
 
         face_location_list, names = faceutil.get_face_location_and_name(
             image)
@@ -64,7 +64,6 @@ class VideoCamera(object):
         for ((left, top, right, bottom), name) in zip(
                 face_location_list,
                 names):
-
             roi = gray[top:bottom, left:right]
             roi = cv2.resize(roi, (FACIAL_EXPRESSION_TARGET_WIDTH,
                                    FACIAL_EXPRESSION_TARGET_HEIGHT))

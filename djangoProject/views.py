@@ -23,17 +23,15 @@ def register(request):
         code = post_content['code']
         admin = AdminInfo.objects.get(email=email)
     except AdminInfo.DoesNotExist:
-        if code == ecode:
-            dic['status'] = "Success"
-            encry_password = make_password(password)
-            newAdmin = AdminInfo(email=email, password=encry_password,
-                                 status=1)
-            print("before")
-            newAdmin.save()
-            print("after")
-        else:
-            dic['status'] = "Failed"
-            dic['message'] = "Wrong code"
+
+        dic['status'] = "Success"
+        encry_password = make_password(password)
+        newAdmin = AdminInfo(email=email, password=encry_password,
+                             status=1)
+        print("before")
+        newAdmin.save()
+        print("after")
+
         return HttpResponse(json.dumps(dic))
     except (KeyError, json.decoder.JSONDecodeError):
         dic['status'] = "Failed"
@@ -63,7 +61,7 @@ def send_code(request):
         ecode = send_email(email)
 
         dic['status'] = "Success"
-
+        dic['code'] = ecode
         return HttpResponse(json.dumps(dic))
     except (KeyError, json.decoder.JSONDecodeError):
         dic['status'] = "Failed"
@@ -81,18 +79,16 @@ def forget_changePwd(request):
         return HttpResponse(json.dumps(dic))
     try:
         post_content = json.loads(request.body)
+        print(post_content)
         email = post_content['email']
         new_pwd = post_content['newPwd']
-        code = post_content['code']
-        if code == ecode:
-            admin = AdminInfo.objects.get(email=email)
-            admin.password = make_password(new_pwd)
-            print(admin.password)
-            admin.save()
-            dic['status'] = "Success"
-        else:
-            dic['status'] = "Failed"
-            dic['message'] = "Wrong code"
+
+        admin = AdminInfo.objects.get(email=email)
+        admin.password = make_password(new_pwd)
+        print(admin.password)
+        admin.save()
+        dic['status'] = "Success"
+
         print(dic)
         return HttpResponse(json.dumps(dic))
     except (KeyError, json.decoder.JSONDecodeError):
@@ -120,7 +116,7 @@ def send_code_changePwd(request):
         pcode = send_email(email)
 
         dic['status'] = "Success"
-
+        dic['code'] = pcode
         return HttpResponse(json.dumps(dic))
     except (KeyError, json.decoder.JSONDecodeError):
         dic['status'] = "Failed"
@@ -140,16 +136,13 @@ def change_pwd(request):
         post_content = json.loads(request.body)
         admin_id = post_content['id']
         new_pwd = post_content['newPwd']
-        code = post_content['code']
-        if code == pcode:
-            admin = AdminInfo.objects.get(id=admin_id)
-            admin.password = make_password(new_pwd)
-            print(admin.password)
-            admin.save()
-            dic['status'] = "Success"
-        else:
-            dic['status'] = "Failed"
-            dic['message'] = "Wrong code"
+
+        admin = AdminInfo.objects.get(id=admin_id)
+        admin.password = make_password(new_pwd)
+        print(admin.password)
+        admin.save()
+        dic['status'] = "Success"
+
         print(dic)
         return HttpResponse(json.dumps(dic))
     except (KeyError, json.decoder.JSONDecodeError):
