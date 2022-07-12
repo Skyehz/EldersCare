@@ -46,7 +46,7 @@ def register(request):
         return HttpResponse(json.dumps(dic))
 
 
-# 发送验证码
+# 发送验证码（注册or忘记-重置密码）
 @csrf_exempt
 def send_code(request):
     dic = {}
@@ -71,9 +71,39 @@ def send_code(request):
         return HttpResponse(json.dumps(dic))
 
 
+# 忘记密码，重置密码
+@csrf_exempt
+def forget_changePwd(request):
+    dic = {}
+    if request.method == 'GET':
+        dic['status'] = "Failed"
+        dic['message'] = "Wrong Method"
+        return HttpResponse(json.dumps(dic))
+    try:
+        post_content = json.loads(request.body)
+        email = post_content['email']
+        new_pwd = post_content['newPwd']
+        code = post_content['code']
+        if code == ecode:
+            admin = AdminInfo.objects.get(email=email)
+            admin.password = make_password(new_pwd)
+            print(admin.password)
+            admin.save()
+            dic['status'] = "Success"
+        else:
+            dic['status'] = "Failed"
+            dic['message'] = "Wrong code"
+        print(dic)
+        return HttpResponse(json.dumps(dic))
+    except (KeyError, json.decoder.JSONDecodeError):
+        dic['status'] = "Failed"
+        dic['message'] = "No Input"
+        return HttpResponse(json.dumps(dic))
+
+
 # 发送验证码(修改密码)
 @csrf_exempt
-def send_code_changepw(request):
+def send_code_changePwd(request):
     dic = {}
     if request.method == 'GET':
         dic['status'] = "Failed"
@@ -128,6 +158,7 @@ def change_pwd(request):
         return HttpResponse(json.dumps(dic))
 
 
+# 登录
 @csrf_exempt
 def login(request):
     dic = {}

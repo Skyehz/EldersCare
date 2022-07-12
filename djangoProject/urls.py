@@ -32,6 +32,7 @@ urlpatterns = [  # urls
     path('elderly/delete', elderly_info.delete_elderly),
     path('elderly/edit', elderly_info.edit_elderly),
     path('changePwd', views.change_pwd),
-    path('changePwd_send_code', views.send_code_changepw)
+    path('changePwd_send_code', views.send_code_changePwd),
+    path('changePwd_forget', views.forget_changePwd),
 ]
 
