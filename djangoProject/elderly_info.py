@@ -122,7 +122,7 @@ def show_all_elderly(request):
             famArray = []
             for r in relations:
                 family = r.familyId
-                tt = {'wechatId': family.wechatId, 'name': family.name, 'gender': family.gender,
+                tt = {'id': family.id, 'wechatId': family.wechatId, 'name': family.name, 'gender': family.gender,
                       'phone': family.phone, 'email': family.email}
                 print(tt)
                 famArray.append(tt)
@@ -141,9 +141,116 @@ def show_all_elderly(request):
 
 
 # 修改老人信息
+@csrf_exempt
+def edit_elderly(request):
+    dic = {}
+    # 如果是get请求，返回老人之前的信息
+    if request.method == 'GET':
+        dic['status'] = "Failed"
+        dic['message'] = "Wrong Method"
+        return HttpResponse(json.dumps(dic))
+        # content = json.loads(request.body)
+        # id = content['id']
+        # elderly = ElderlyInfo.objects.get(id=id)
+        # profile = encode_base64(elderly.profilePath)  # 将图片用base64编码
+        # # 获取家属
+        # relations = FamilyElderlyRelationship.objects.filter(elderlyId=elderly)
+        # famArray = []
+        # for r in relations:
+        #     family = r.familyId
+        #     tt = {'wechatId': family.wechatId, 'name': family.name, 'gender': family.gender,
+        #           'phone': family.phone, 'email': family.email}
+        #     print(tt)
+        #     famArray.append(tt)
+        #
+        # print(famArray)
+        # dic = {'name': elderly.name, 'gender': elderly.gender,
+        #        'phone': elderly.phone, 'birthday': elderly.birthday,
+        #        'description': elderly.description, 'idCardNum': elderly.idCardNum,
+        #        'checkinDate': elderly.checkinDate, 'checkoutDate': elderly.checkoutDate,
+        #        'roomNum': elderly.roomNum, 'health': elderly.health,
+        #        'families': famArray, 'profile': profile}
+        #
+        # return HttpResponse(json.dumps(dic, ensure_ascii=False))
+
+    try:
+        post_content = json.loads(request.body)
+        elderly_id = post_content['id']  # 老人的id!
+        name = post_content['name']
+        gender = post_content['gender']
+        phone = post_content['phone']
+        idCardNum = post_content['idCardNum']
+        birthday = post_content['birthday']
+        description = post_content['description']
+        print(description)
+        checkinDate = post_content['checkinDate']
+        checkoutDate = post_content['checkoutDate']
+        roomNum = post_content['roomNum']
+        health = post_content['health']
+        families = post_content['families']
+    except (KeyError, json.decoder.JSONDecodeError):
+        dic['status'] = "Failed"
+        dic['message'] = "No Input"
+        return HttpResponse(json.dumps(dic))
+    # 修改老人信息
+    ElderlyInfo.objects.filter(id=elderly_id).update(name=name, gender=gender, phone=phone,
+                                                     idCardNum=idCardNum, birthday=birthday,
+                                                     checkinDate=checkinDate, checkoutDate=checkoutDate,
+                                                     roomNum=roomNum, health=health, description=description)
+    # 修改/新增家属信息
+    for family in families:
+        try:
+            existed = FamilyInfo.objects.get(email=family['email'])
+            # 更新记录
+            FamilyInfo.objects.filter(email=family['email']).\
+                update(wechatId=family['wechatId'], name=family['name'],
+                       phone=family['phone'], email=family['email'],
+                       gender=family['gender'])
+
+        except FamilyInfo.DoesNotExist:
+            # 如果没有这位家属，则是新增加的家属
+            createTime = datetime.datetime.now().strftime("%Y-%m-%d")
+            new_fam = FamilyInfo(wechatId=family['wechatId'], name=family['name'],
+                                 phone=family['phone'], gender=family['gender'],
+                                 email=family['email'], createTime=createTime, status=1)
+            new_fam.save()
+            # 新建关系表记录
+            newRelation = FamilyElderlyRelationship(elderlyId=ElderlyInfo.objects.get(id=elderly_id),
+                                                    familyId=new_fam, createTime=createTime, status=1)
+            newRelation.save()
+
+    dic['status'] = "Success"
+    return HttpResponse(json.dumps(dic))
 
 
+# 删除老人
+@csrf_exempt
+def delete_elderly(request):
+    dic = {}
+    if request.method == 'GET':
+        dic['status'] = "Failed"
+        dic['message'] = "Wrong Method"
+        return HttpResponse(json.dumps(dic))
 
+    try:
+        post_content = json.loads(request.body)
+        id = post_content['id']
+    except (KeyError, json.decoder.JSONDecodeError):
+        dic['status'] = "Failed"
+        dic['message'] = "No Input"
+        return HttpResponse(json.dumps(dic))
+
+    elderly = ElderlyInfo.objects.get(id=id)
+    relations = FamilyElderlyRelationship.objects.filter(elderlyId=elderly)
+    # 记录所有家属信息准备删除
+    for r in relations:
+        family = r.familyId
+        r.delete()
+        family.delete()
+    elderly.delete()
+
+    dic['status'] = "Success"
+    return HttpResponse(json.dumps(dic))
 
 
 

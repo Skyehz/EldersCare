@@ -188,24 +188,6 @@ def login(request):
 @csrf_exempt
 def edit_admin_info(request):
     dic = {}
-    # 如果是get请求，看看之前有没有完善过信息
-    if request.method == 'GET':
-        try:
-            post_content = json.loads(request.body)
-            id = post_content['id']
-            admin = AdminInfo.objects.get(id=id)
-            dic['name'] = admin.name
-            dic['gender'] = admin.gender
-            dic['phone'] = admin.phone
-            dic['idCardNum'] = admin.idCardNum
-            dic['birthday'] = admin.birthday
-            dic['description'] = admin.description
-        except (KeyError, json.decoder.JSONDecodeError):
-            dic['status'] = "Failed"
-            dic['message'] = "No Input"
-            return HttpResponse(json.dumps(dic))
-        dic['status'] = "Success"
-        return HttpResponse(json.dumps(dic))
     # 解析前端的json数据建数据库记录
     try:
         post_content = json.loads(request.body)
@@ -227,5 +209,33 @@ def edit_admin_info(request):
                                            description=description, status=1)
     dic['status'] = "Success"
     return HttpResponse(json.dumps(dic))
+
+
+# 获取管理员详细信息
+@csrf_exempt
+def get_detail(request):
+    dic = {}
+    if request.method == 'GET':
+        dic['status'] = "Failed"
+        dic['message'] = "Wrong Method"
+        return HttpResponse(json.dumps(dic))
+    # post请求返回对应详情
+    try:
+        post_content = json.loads(request.body)
+        id = post_content['id']
+        admin = AdminInfo.objects.get(id=id)
+        dic['name'] = admin.name
+        dic['gender'] = admin.gender
+        dic['phone'] = admin.phone
+        dic['idCardNum'] = admin.idCardNum
+        dic['birthday'] = admin.birthday
+        dic['description'] = admin.description
+    except (KeyError, json.decoder.JSONDecodeError):
+        dic['status'] = "Failed"
+        dic['message'] = "No Input"
+        return HttpResponse(json.dumps(dic))
+    dic['status'] = "Success"
+    return HttpResponse(json.dumps(dic, ensure_ascii=False))
+
 
 
