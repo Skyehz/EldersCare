@@ -188,6 +188,7 @@ def edit_elderly(request):
         roomNum = post_content['roomNum']
         health = post_content['health']
         families = post_content['families']
+        print(families)
     except (KeyError, json.decoder.JSONDecodeError):
         dic['status'] = "Failed"
         dic['message'] = "No Input"
