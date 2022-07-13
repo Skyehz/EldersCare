@@ -176,9 +176,13 @@ def edit_elderly(request):
 
     try:
         post_content = json.loads(request.body)
+        print(post_content)
         elderly_id = post_content['id']  # 老人的id!
+        print(elderly_id)
         name = post_content['name']
+        print(name)
         gender = post_content['gender']
+        print(gender)
         phone = post_content['phone']
         idCardNum = post_content['idCardNum']
         birthday = post_content['birthday']
