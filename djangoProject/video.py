@@ -3,13 +3,13 @@ import time
 from django.http import StreamingHttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-# from djangoProject.cam import VideoCamera
-
-
 # 拍照
+from djangoProject.cam import VideoCamera
+
+
 def capture_image(camera, type, id):
     # path 可以修改
-    path = "C:/Users/user/PycharmProjects/EldersCare/profiles/"+type+"/"+str(id)+".png"
+    path = "/usr/local/djangoProject/profiles/"+type+"/"+str(id)+".png"
     print(path)
     tik = time.time()  # 开始记时
     while True:
