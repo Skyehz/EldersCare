@@ -1,11 +1,44 @@
+import cv2
 from django.contrib.auth.hashers import make_password, check_password
-from .models import AdminInfo
+from .models import AdminInfo, EventInfo
 
 import json
-from django.http import HttpResponse
+from django.http import HttpResponse, StreamingHttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from .utils import send_email
+from .utils import send_email, encode_base64
+
+
+def playback(camera):
+    while True:
+        # 读取图片
+        ret, frame = camera.read()
+
+        ret, frame = cv2.imencode('.jpeg', frame)
+        if ret:
+            # 转换为byte类型的，存储在迭代器中
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame.tobytes() + b'\r\n')
+
+
+@csrf_exempt
+def fornow(request):
+    if request.method == 'GET':
+        id = request.GET.get('id')
+        camera = cv2.VideoCapture("events/invade.mp4")
+        # camera = cv2.VideoCapture(0)
+        # 使用流传输传输视频流
+        return StreamingHttpResponse(playback(camera, id),
+                                     content_type='multipart/x-mixed-replace; boundary=frame')
+
+
+def invade_playback(request):
+    if request.method == 'GET':
+        id = request.GET.get('id')
+        camera = cv2.VideoCapture("events/" + id + "_invade.mp4")
+        # 使用流传输传输视频流
+        return StreamingHttpResponse(playback(camera),
+                                     content_type='multipart/x-mixed-replace; boundary=frame')
 
 
 @csrf_exempt
@@ -238,4 +271,41 @@ def get_detail(request):
     return HttpResponse(json.dumps(dic, ensure_ascii=False))
 
 
+# 获取所有事件
+@csrf_exempt
+def get_event(request):
+    dic = {}
+    if request.method == 'GET':
+        events = EventInfo.objects.all()
+        # 当没有任何记录
+        if events.count() == 0:
+            dic = {'status': "Failed", 'message': "no elderly"}
+            return HttpResponse(json.dumps(dic))
 
+        array = []
+        orderedE = events.order_by('id')  # 将事件按id顺序排序
+        eventType = ['摔倒', '情绪良好', '情绪低落', '义工交互', '禁止入侵']  # 事件类型
+        for event in orderedE:
+            print(event.images)
+            if event.status == 5:
+                image = '0'
+            else:
+                image = encode_base64(event.images)  # 将图片用base64编码
+
+            time = json.dumps(event.createTime, default=str)[1:20]
+
+            tmp = {'id': event.id,
+                   'date': time,
+                   'location': event.monitorID,
+                   'description': event.description,
+                   'type': eventType[event.status - 1],
+                   'image': image  # 图片base64编码（除入侵检测-回放视频）
+                   }
+            array.append(tmp)
+        dic = {"status": "success", "elderly_array": array}
+
+        return HttpResponse(json.dumps(dic, ensure_ascii=False))
+    else:
+        dic['status'] = "Failed"
+        dic['message'] = "Wrong request"
+        return HttpResponse(json.dumps(dic))

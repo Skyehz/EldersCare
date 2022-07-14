@@ -1,3 +1,4 @@
+from .cam_collect import CaptureCamera
 from .utils import encode_base64
 from .models import AdminInfo
 from .models import EmployeeInfo
@@ -44,9 +45,9 @@ def create_employee_info(request):
                                 status=1)
     new_employee.save()
     # 建立图片训练集目录
-    imageSetDir = "/usr/local/djangoProject/imageSet/employee/"+str(new_employee.id)
-    profilePath = "/usr/local/djangoProject/profiles/employee/"+str(new_employee.id)+".png"
-    imageSetDir2 = "C:/Users/user/PycharmProjects/EldersCare/imageSet/employee/"+str(new_employee.id)
+    imageSetDir = "/usr/local/djangoProject/imageSet/employee/" + str(new_employee.id)
+    profilePath = "/usr/local/djangoProject/profiles/employee/" + str(new_employee.id) + ".png"
+    imageSetDir2 = "C:/Users/user/PycharmProjects/EldersCare/imageSet/employee/" + str(new_employee.id)
     # profilePath = "C:/Users/user/PycharmProjects/EldersCare/profiles/employee/"+str(new_employee.id)+".png"
     os.mkdir(imageSetDir)
     EmployeeInfo.objects.filter(id=new_employee.id).update(imageSetDir=imageSetDir,
@@ -54,6 +55,16 @@ def create_employee_info(request):
     dic['status'] = "Success"
     dic['employee_id'] = new_employee.id
     return HttpResponse(json.dumps(dic))
+
+
+# 采集工作人员照片
+@csrf_exempt
+def collect_employee_face(request):
+    camera = CaptureCamera("employee", 2)
+    camera.prepare()
+    # 使用流传输传输视频流
+    return StreamingHttpResponse(camera.get_frame(),
+                                 content_type='multipart/x-mixed-replace; boundary=frame')
 
 
 # 拍摄工作人员头像
@@ -126,7 +137,7 @@ def edit_employee(request):
         dic['message'] = "No Input"
         return HttpResponse(json.dumps(dic))
     # 修改义工信息
-    EmployeeInfo.objects.filter(id=employee_id).\
+    EmployeeInfo.objects.filter(id=employee_id). \
         update(name=name, gender=gender, phone=phone,
                idCardNum=idCardNum, birthday=birthday,
                hireDate=hireDate, dismissDate=dismissDate,
@@ -158,5 +169,3 @@ def delete_employee(request):
 
     dic['status'] = "Success"
     return HttpResponse(json.dumps(dic))
-
-

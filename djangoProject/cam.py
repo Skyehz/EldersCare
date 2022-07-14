@@ -1,3 +1,6 @@
+import _thread
+import os
+
 import dlib
 import cv2
 import time
@@ -9,6 +12,7 @@ from scipy.spatial import distance as dist
 from PIL import Image, ImageDraw, ImageFont
 from keras.preprocessing.image import img_to_array
 
+from djangoProject.models import EventInfo, ElderlyInfo
 from oldcare.utils import fileassistant
 from oldcare.conv import MiniVGGNet
 from oldcare.track import CentroidTracker
@@ -252,11 +256,13 @@ class VideoCamera(object):
                             event_location = '院子'
                             print('[EVENT] %s, 院子, 有人闯入禁止区域!!!' % (current_time))
 
+                            # 插入事件截图
                             # cv2.imwrite(
                             #     os.path.join(output_fence_path, 'snapshot_%s.jpg' % (time.strftime('%Y%m%d_%H%M%S'))),
                             #     frame)  # snapshot
-                            #
-                            # # insert into database
+
+                            # 事件存入数据库
+
                             # command = '%s inserting.py --event_desc %s --event_type 4 --event_location %s' % (
                             #     python_path, event_desc, event_location)
                             # p = subprocess.Popen(command, shell=True)
@@ -378,9 +384,13 @@ class VideoCamera(object):
                             print('[EVENT] %s, 房间, %s正在笑.' % (current_time, id_card_to_name[name]))
 
                             # 这里插入数据库，可以存图片或者信息都行，name是老人名字，id_card_to_name[name]是身份，即“老人”
-                            # cv2.imwrite(os.path.join(output_smile_path,
-                            #                          'snapshot_%s.jpg' % (time.strftime('%Y%m%d_%H%M%S'))),
-                            #             image)  # snapshot
+                            interaction_elderly = ElderlyInfo.objects.get(name=name)
+                            interaction_record_path = "events/" + str(interaction_elderly.id) + "_" + "smile" + ".png"
+                            try:
+                                _thread.start_new_thread(smile_record,
+                                                         ("房间", interaction_record_path, interaction_elderly.id))
+                            except:
+                                print("线程启动失败")
 
 
                 else:  # everything is ok
@@ -471,6 +481,12 @@ class VideoCamera(object):
                         #     frame)  # snapshot
 
                         # insert into database
+                        interaction_elderly = ElderlyInfo.objects.get(name=id_card_to_name[old_people_name[j_index]])
+                        interaction_record_path = "events/" + str(interaction_elderly.id) + "_"+"interact" + ".png"
+                        try:
+                            _thread.start_new_thread(interaction_record, ("房间", interaction_record_path, interaction_elderly.id))
+                        except:
+                            print("线程启动失败")
                         # command = '%s inserting.py --event_desc %s --event_type 1 --event_location %s --old_people_id %d' % (
                         #     python_path, event_desc, event_location, int(name))
                         # p = subprocess.Popen(command, shell=True)
@@ -487,6 +503,15 @@ class VideoCamera(object):
         # 这里写个判断fall>normal就可以判断是跌倒了，或者要求准确率高点就写成fall>0.7等等
         fall_label = "Fall (%.2f)" % fall if fall > normal else "Normal (%.2f)" % (normal)
 
+        for (people_type, name) in zip(people_type_list, names):
+            if id_card_to_type[name] == "old_people":
+                fall_elderly = ElderlyInfo.objects.get(name=name)
+                fall_record_path = "events/" + str(fall_elderly.id) + "_fall" + ".png"
+                try:
+                    _thread.start_new_thread(fall_record, ("房间", fall_record_path, fall_elderly.id))
+                except:
+                    print("线程启动失败")
+
         # here to insert into database or send to front end
 
         # show our detected faces along with smiling/not smiling labels
@@ -494,3 +519,55 @@ class VideoCamera(object):
         return jpeg.tobytes()
         # else:
         #     print("wrong read")
+
+
+# # 事件信息表
+# class EventInfo(models.Model):
+#     id = models.BigAutoField(primary_key=True)
+#     typeId = models.ForeignKey(EventType, on_delete=models.SET_NULL, null=True)  # 事件类型id
+#     levelId = models.ForeignKey(EventLevel, on_delete=models.SET_NULL, null=True)  # 事件等级id
+#     createTime = models.DateTimeField(default=timezone.now())
+#     handleTime = models.DateTimeField()
+#     monitorID = models.CharField(max_length=20)  # 监控摄像头id
+#     images = models.CharField(max_length=2048)  # 照片地址
+#     description = models.CharField(verbose_name='description', max_length=255)
+#     elderly = models.ForeignKey(ElderlyInfo, on_delete=models.CASCADE)
+#     isHandled = models.IntegerField()  # 0未处理，1处理
+#     status = models.IntegerField()  # 数据是否有效，0无效1有效
+#     relatedID = models.CharField(max_length=500)  # 事件相关人员id
+
+
+# 摔倒检测
+def fall_record(monitorID, images, elderly_id):
+    day = datetime.datetime.now().day
+    time = datetime.datetime.now().strftime("%Y-%m-%d")
+    newEvent = EventInfo(monitorID=monitorID, handleTime=time, description="摔倒",
+                         elderly_id=elderly_id, isHandled=day, status=1, relatedID=1)
+    print(newEvent.createTime)
+    newEvent.save()
+
+    EventInfo.objects.filter(id=newEvent.id).update(images=images)
+
+
+# 交互检测
+def interaction_record(monitorID, images, elderly_id):
+    day = datetime.datetime.now().day
+    time = datetime.datetime.now().strftime("%Y-%m-%d")
+    newEvent = EventInfo(monitorID=monitorID, handleTime=time, description="与义工交互",
+                         elderly_id=elderly_id, isHandled=day, status=4, relatedID=1)
+    print(newEvent.createTime)
+    newEvent.save()
+
+    EventInfo.objects.filter(id=newEvent.id).update(images=images)
+
+
+# 微笑检测
+def smile_record(monitorID, images, elderly_id):
+    day = datetime.datetime.now().day
+    time = datetime.datetime.now().strftime("%Y-%m-%d")
+    newEvent = EventInfo(monitorID=monitorID, description="情绪良好", handleTime=time,
+                         elderly_id=elderly_id, isHandled=day, status=2, relatedID=1)
+    print(newEvent.createTime)
+    newEvent.save()
+
+    EventInfo.objects.filter(id=newEvent.id).update(images=images)

@@ -1,3 +1,4 @@
+from .cam_collect import CaptureCamera
 from .utils import encode_base64
 from .models import ElderlyInfo
 from .models import AdminInfo
@@ -45,9 +46,9 @@ def create_volunteer_info(request):
                                   status=1)
     new_volunteer.save()
     # 建立图片训练集目录
-    imageSetDir = "/usr/local/djangoProject/imageSet/volunteer/"+str(new_volunteer.id)
-    profilePath = "/usr/local/djangoProject/profiles/volunteer/"+str(new_volunteer.id)+".png"
-    imageSetDir2 = "C:/Users/user/PycharmProjects/EldersCare/imageSet/volunteer/"+str(new_volunteer.id)
+    imageSetDir = "/usr/local/djangoProject/imageSet/volunteer/" + str(new_volunteer.id)
+    profilePath = "/usr/local/djangoProject/profiles/volunteer/" + str(new_volunteer.id) + ".png"
+    imageSetDir2 = "C:/Users/user/PycharmProjects/EldersCare/imageSet/volunteer/" + str(new_volunteer.id)
     # profilePath = "C:/Users/user/PycharmProjects/EldersCare/profiles/volunteer/"+str(new_volunteer.id)+".png"
     os.mkdir(imageSetDir)
     VolunteerInfo.objects.filter(id=new_volunteer.id).update(imageSetDir=imageSetDir,
@@ -55,6 +56,16 @@ def create_volunteer_info(request):
     dic['status'] = "Success"
     dic['volunteer_id'] = new_volunteer.id
     return HttpResponse(json.dumps(dic))
+
+
+# 采集老人照片
+@csrf_exempt
+def collect_volunteer_face(request):
+    camera = CaptureCamera("volunteer", 2)
+    camera.prepare()
+    # 使用流传输传输视频流
+    return StreamingHttpResponse(camera.get_frame(),
+                                 content_type='multipart/x-mixed-replace; boundary=frame')
 
 
 # 拍摄义工头像
@@ -128,7 +139,7 @@ def edit_volunteer(request):
         dic['message'] = "No Input"
         return HttpResponse(json.dumps(dic))
     # 修改义工信息
-    VolunteerInfo.objects.filter(id=volunteer_id).\
+    VolunteerInfo.objects.filter(id=volunteer_id). \
         update(name=name, gender=gender, phone=phone,
                idCardNum=idCardNum, birthday=birthday,
                hireDate=hireDate, dismissDate=dismissDate,
@@ -160,5 +171,3 @@ def delete_volunteer(request):
 
     dic['status'] = "Success"
     return HttpResponse(json.dumps(dic))
-
-
