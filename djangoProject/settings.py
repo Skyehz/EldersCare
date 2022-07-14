@@ -54,6 +54,7 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_ALLOW_ALL = True  # 如果是True，白名单不启用
 
+
 ROOT_URLCONF = 'djangoProject.urls'
 
 TEMPLATES = [

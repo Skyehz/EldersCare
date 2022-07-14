@@ -27,6 +27,7 @@ def create_elderly_record(request):
     # 解析前端的json数据建数据库记录
     try:
         post_content = json.loads(request.body)
+        print(post_content)
         name = post_content['name']
         gender = post_content['gender']
         phone = post_content['phone']
