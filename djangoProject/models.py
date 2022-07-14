@@ -50,14 +50,19 @@ class ElderlyInfo(models.Model):
     status = models.IntegerField()  # 数据是否有效，0无效1有效
 
 
-# 老人位置表
+# 老人心率检测表
 class ElderlyLocation(models.Model):
     id = models.BigAutoField(primary_key=True)
     elderlyId = models.ForeignKey(ElderlyInfo, on_delete=models.CASCADE)
-    longitude = models.CharField(max_length=20)  # 经度
-    latitude = models.CharField(max_length=20)  # 维度
+    longitude = models.CharField(max_length=20)  # 时间字符串
+    latitude = models.CharField(max_length=20)  # 心率状况
     createTime = models.DateTimeField(default=timezone.now())
-    status = models.IntegerField()  # 数据是否有效，0无效1有效
+    status = models.IntegerField()  # 心率
+ #  id = models.BigAutoField(primary_key=True)
+ #  elderly = models.ForeignKey(ElderlyInfo, on_delete=models.CASCADE)
+ #  rate = models.IntegerField()
+ #  time = models.CharField(max_length=30)
+ #  condition = models.CharField(max_length=40)
 
 
 # 工作人员信息表
@@ -170,5 +175,14 @@ class VolunteerInfo(models.Model):
     createTime = models.DateTimeField(default=timezone.now())  # 记录创建时间
     updateTime = models.DateTimeField(null=True)  # 最近更新时间
     status = models.IntegerField()  # 数据是否有效，0无效1有效
+
+
+# 老人心率表
+class HeartRate(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    elderly = models.ForeignKey(ElderlyInfo, on_delete=models.CASCADE)
+    rate = models.IntegerField()
+    time = models.CharField(max_length=30)
+    condition = models.CharField(max_length=40)
 
 

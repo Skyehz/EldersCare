@@ -32,6 +32,7 @@ urlpatterns = [  # urls
     path('elderly/total', elderly_info.show_all_elderly),
     path('elderly/delete', elderly_info.delete_elderly),
     path('elderly/edit', elderly_info.edit_elderly),
+    path('elderly/rate', elderly_info.detect_heart_rate),
     path('volunteer/create', volunteer_info.create_volunteer_info),
     path('volunteer/profile', volunteer_info.shot_volunteer_profile),
     path('volunteer/total', volunteer_info.show_all_volunteer),

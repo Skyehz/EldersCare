@@ -61,10 +61,9 @@ def create_employee_info(request):
 def shot_employee_profile(request):
     dic = {}
     # get请求后端向前端推流
-    if request.method == 'POST':
+    if request.method == 'GET':
         try:
-            content = json.loads(request.body)
-            employee_id = content['employee_id']
+            employee_id = request.GET.get('employee_id')
         except (KeyError, json.decoder.JSONDecodeError):
             dic['status'] = "Failed"
             dic['message'] = "No Input"

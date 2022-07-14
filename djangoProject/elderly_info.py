@@ -3,16 +3,17 @@ from .models import ElderlyInfo
 from .models import AdminInfo
 from .models import FamilyInfo
 from .models import FamilyElderlyRelationship
+from .models import ElderlyLocation
 from .video import capture_image
 
 import json
 import datetime
 import os
 import cv2
+import _thread
 from django.http import StreamingHttpResponse
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-
 
 
 @csrf_exempt
@@ -87,15 +88,17 @@ def create_elderly_record(request):
 def shot_elderly_profile(request):
     dic = {}
     # get请求后端向前端推流
-    if request.method == 'POST':
+    if request.method == 'GET':
         try:
-            content = json.loads(request.body)
-            elderly_id = content['elderly_id']
+            elderly_id = request.GET.get('elderly_id')
+            print("id")
+            print(elderly_id)
         except (KeyError, json.decoder.JSONDecodeError):
             dic['status'] = "Failed"
             dic['message'] = "No Input"
             return HttpResponse(json.dumps(dic))
         camera = cv2.VideoCapture("rtmp://39.107.230.98:1935/live/home")
+        # camera = cv2.VideoCapture(0)
         # 使用流传输传输视频流
         return StreamingHttpResponse(capture_image(camera, "elderly", elderly_id),
                                      content_type='multipart/x-mixed-replace; boundary=frame')
@@ -256,6 +259,49 @@ def delete_elderly(request):
 
     dic['status'] = "Success"
     return HttpResponse(json.dumps(dic))
+
+
+# 检测心率
+@csrf_exempt
+def detect_heart_rate(request):
+    dic = {}
+    if request.method == 'GET':
+        dic['status'] = "Failed"
+        dic['message'] = "Wrong Method"
+        return HttpResponse(json.dumps(dic))
+
+    # 创建线程，在数据库中添加信息
+    try:
+        post_content = json.loads(request.body)
+        rate = post_content['rate']
+        id = post_content['id']
+        print(rate)
+        _thread.start_new_thread(save_heart_rate,
+                                 (rate, id,))
+        dic['status'] = "Success"
+        return HttpResponse(json.dumps(dic))
+    except:
+        print("Error: 无法启动线程")
+        dic['status'] = "Failed"
+        dic['message'] = "Thread Failed"
+        return HttpResponse(json.dumps(dic))
+
+
+def save_heart_rate(rate, id):
+    elderly = ElderlyInfo.objects.get(id=id)
+    create_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    if rate < 40:
+        condition = "心率过低"
+    elif rate < 55:
+        condition = "心率较缓"
+    elif rate > 100:
+        condition = "心率过快"
+    else:
+        condition = "心率正常"
+    new_rate = ElderlyLocation(elderlyId=elderly, longitude=create_time,
+                               latitude=condition, status=rate)
+    new_rate.save()
+
 
 
 

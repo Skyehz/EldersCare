@@ -17,7 +17,7 @@ def capture_image(camera, type, id):
         ret, frame = camera.read()
         if ret:
             tok = time.time()
-            if tok - tik >= 6:
+            if tok - tik >= 5:
                 cv2.imwrite(path, frame)
                 print("ok")
                 break
@@ -27,11 +27,11 @@ def capture_image(camera, type, id):
                 # 转换为byte类型的，存储在迭代器中
                 yield (b'--frame\r\n'
                        b'Content-Type: image/jpeg\r\n\r\n' + frame.tobytes() + b'\r\n')
-            tok = time.time()
-            if tok-tik >= 5:
-                cv2.imwrite(path, frame)
-                print("ok")
-                break
+            # tok = time.time()
+            # if tok-tik >= 5:
+            #     cv2.imwrite(path, frame)
+            #     print("ok")
+            #     break
 
 
 # def gen_display(camera):

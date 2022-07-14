@@ -62,10 +62,9 @@ def create_volunteer_info(request):
 def shot_volunteer_profile(request):
     dic = {}
     # get请求后端向前端推流
-    if request.method == 'POST':
+    if request.method == 'GET':
         try:
-            content = json.loads(request.body)
-            volunteer_id = content['volunteer_id']
+            volunteer_id = request.GET.get('volunteer_id')
         except (KeyError, json.decoder.JSONDecodeError):
             dic['status'] = "Failed"
             dic['message'] = "No Input"
