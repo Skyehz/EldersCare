@@ -2,8 +2,6 @@ import cv2
 import time
 from django.http import StreamingHttpResponse
 from django.views.decorators.csrf import csrf_exempt
-
-# 拍照
 from djangoProject.cam import VideoCamera
 
 
@@ -54,7 +52,7 @@ def capture_image(camera, type, id):
 def gen_display(camera):
 
     while True:
-        frame = camera.get_frame()
+        frame = camera.get_frame(0)
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
